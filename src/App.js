@@ -6,6 +6,7 @@ import Mermaid from "./Mermaid";
 import mermaid from "mermaid";
 // import Mermaid from "react-mermaid2";
 import { useState, useEffect } from "react";
+import CreateState from "./components/CreateState";
 // import { __esModule } from "react-mermaid";
 // import mermaidAPI from "mermaid/dist/mermaidAPI";
 
@@ -15,10 +16,16 @@ import { useState, useEffect } from "react";
 //   securityLevel: "loose",
 // });
 
+const listMarkov = [];
+const setupMermaid = `stateDiagram-v2 \n`;
+
 function App() {
-  const [text, setText] = useState();
+  const [text, setText] = useState(`stateDiagram-v2 \n`);
   const [preview, setPreview] = useState();
   const [output, setOutput] = useState("");
+  const [inputIn, setInputIn] = useState("");
+  const [inputFin, setInputFin] = useState("");
+  const [inputProb, setInputProb] = useState("");
 
   useEffect(() => {
     // mermaid.contentLoaded();
@@ -36,6 +43,19 @@ function App() {
     setPreview(text);
   };
 
+  const createStateInput = () => {
+    // console.log("clicado CreateState");
+    // console.log("input:", inputIn);
+    // console.log("input:", inputFin);
+    // console.log("input:", inputProb);
+    listMarkov.push([inputIn, inputFin, inputProb]);
+    const newLinha = `\t ${inputIn} --> ${inputFin} : ${inputProb} \n`;
+    console.log(listMarkov);
+    console.log(newLinha);
+    setText(text + newLinha);
+    console.log(text);
+  };
+
   return (
     <div className="App">
       <h1>React Mermaid</h1>
@@ -49,6 +69,12 @@ function App() {
         >
           {text}
         </textarea>
+        <CreateState
+          onClick={createStateInput}
+          onChangeIn={(e) => setInputIn(e.target.value)}
+          onChangeFin={(e) => setInputFin(e.target.value)}
+          onChangeProb={(e) => setInputProb(e.target.value)}
+        />
       </div>
       <div>
         Your code (for debugging):{" "}
