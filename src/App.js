@@ -1,39 +1,37 @@
-// import logo from "./logo.svg";
 import "./App.css";
 import Mermaid from "./Mermaid";
-// import example from "./example";
-// import mermaidAPI from "mermaid/dist/mermaidAPI";
 import mermaid from "mermaid";
-// import Mermaid from "react-mermaid2";
 import { useState, useEffect } from "react";
-// import { __esModule } from "react-mermaid";
-// import mermaidAPI from "mermaid/dist/mermaidAPI";
-
-// mermaid.initialize({
-//   startOnLoad: true,
-//   theme: "default",
-//   securityLevel: "loose",
-// });
+import CreateState from "./components/CreateState";
+const listMarkov = [];
+const setupMermaid = `stateDiagram-v2 \n`;
 
 function App() {
-  const [text, setText] = useState();
+  const [text, setText] = useState(`stateDiagram-v2 \n`);
   const [preview, setPreview] = useState();
   const [output, setOutput] = useState("");
+  const [inputIn, setInputIn] = useState("");
+  const [inputFin, setInputFin] = useState("");
+  const [inputProb, setInputProb] = useState("");
 
   useEffect(() => {
-    // mermaid.contentLoaded();
-    // handleParse();
-
     const resultRender = mermaid.render("graph", preview).then((res) => {
       const { svg } = res;
       setOutput(svg);
-      // console.log(svg);
     });
-    // console.log("resultrender:", resultRender);
   }, [preview]);
 
   const handleClick = () => {
     setPreview(text);
+  };
+
+  const createStateInput = () => {
+    listMarkov.push([inputIn, inputFin, inputProb]);
+    const newLinha = `\t ${inputIn} --> ${inputFin} : ${inputProb} \n`;
+    console.log(listMarkov);
+    console.log(newLinha);
+    setText(text + newLinha);
+    console.log(text);
   };
 
   return (
@@ -49,6 +47,12 @@ function App() {
         >
           {text}
         </textarea>
+        <CreateState
+          onClick={createStateInput}
+          onChangeIn={(e) => setInputIn(e.target.value)}
+          onChangeFin={(e) => setInputFin(e.target.value)}
+          onChangeProb={(e) => setInputProb(e.target.value)}
+        />
       </div>
       <div>
         Your code (for debugging):{" "}
