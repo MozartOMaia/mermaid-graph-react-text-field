@@ -1,19 +1,20 @@
 import "./App.css";
 
 import mermaid from "mermaid";
+import React from "react";
 import { useState, useEffect, useRef } from "react";
 
 function App() {
   const [text, setText] = useState(`stateDiagram-v2 \n`);
-  const [preview, setPreview] = useState();
+  const [preview, setPreview] = useState<string | undefined>("");
   const [output, setOutput] = useState("");
   const [inputIn, setInputIn] = useState("");
   const [inputFin, setInputFin] = useState("");
   const [inputProb, setInputProb] = useState("");
-  const listMarkov = useRef([]);
+  const listMarkov = useRef<any>([]);
 
   useEffect(() => {
-    const resultRender = mermaid.render("graph", preview).then((res) => {
+    mermaid.render("graph", preview).then((res) => {
       const { svg } = res;
       setOutput(svg);
     });
@@ -31,7 +32,7 @@ function App() {
     return result;
   };
 
-  const changeState = (first, second, prob) => {
+  const changeState = (first, second, prob: any | never) => {
     for (let i = 0; i < listMarkov.current.length; i++) {
       if (
         listMarkov.current[i][0] === first &&
