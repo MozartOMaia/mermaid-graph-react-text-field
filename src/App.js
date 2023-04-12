@@ -1,10 +1,7 @@
 import "./App.css";
-import Mermaid from "./Mermaid";
+
 import mermaid from "mermaid";
-import { useState, useEffect } from "react";
-import CreateState from "./components/CreateState";
-const listMarkov = [];
-const setupMermaid = `stateDiagram-v2 \n`;
+import { useState, useEffect, useRef } from "react";
 
 function App() {
   const [text, setText] = useState(`stateDiagram-v2 \n`);
@@ -13,6 +10,7 @@ function App() {
   const [inputIn, setInputIn] = useState("");
   const [inputFin, setInputFin] = useState("");
   const [inputProb, setInputProb] = useState("");
+  const listMarkov = useRef([]);
 
   useEffect(() => {
     const resultRender = mermaid.render("graph", preview).then((res) => {
@@ -25,40 +23,64 @@ function App() {
     setPreview(text);
   };
 
+  const createText = () => {
+    const result = listMarkov.current.reduce(
+      (acc, curr) => acc + `${curr[0]} --> ${curr[1]} : ${curr[2]} \n`,
+      `stateDiagram-v2 \n`
+    );
+    return result;
+  };
+
+  const changeState = (first, second, prob) => {
+    for (let i = 0; i < listMarkov.current.length; i++) {
+      if (
+        listMarkov.current[i][0] === first &&
+        listMarkov.current[i][1] === second
+      ) {
+        listMarkov.current[i][2] = prob;
+        return;
+      }
+    }
+    listMarkov.current.push([first, second, prob]);
+  };
+
   const createStateInput = () => {
-    listMarkov.push([inputIn, inputFin, inputProb]);
-    const newLinha = `\t ${inputIn} --> ${inputFin} : ${inputProb} \n`;
-    console.log(listMarkov);
-    console.log(newLinha);
-    setText(text + newLinha);
-    console.log(text);
+    changeState(inputIn, inputFin, inputProb);
+    const creatingText = createText();
+
+    setText(creatingText);
   };
 
   return (
     <div className="App">
       <h1>React Mermaid</h1>
       <div>
-        <textarea
-          name=""
-          id="input"
-          cols="41"
-          rows="15"
-          onChange={(e) => setText(e.target.value)}
-        >
-          {text}
-        </textarea>
-        <CreateState
-          onClick={createStateInput}
-          onChangeIn={(e) => setInputIn(e.target.value)}
-          onChangeFin={(e) => setInputFin(e.target.value)}
-          onChangeProb={(e) => setInputProb(e.target.value)}
-        />
+        <div>
+          <input onChange={(e) => setInputIn(e.target.value)} value={inputIn} />
+          <input
+            onChange={(e) => setInputFin(e.target.value)}
+            value={inputFin}
+          />
+          <input
+            type={"number"}
+            onChange={(e) => setInputProb(e.target.value)}
+            value={inputProb}
+          />
+          <button onClick={createStateInput}>Adicionar</button>
+        </div>
       </div>
       <div>
         Your code (for debugging):{" "}
-        <pre className="mermaid" id="preview">
-          {preview}
-        </pre>
+        {/* <pre className="mermaid" id="preview">
+          {text}
+        </pre> */}
+        <ol>
+          {listMarkov.current.map((el) => (
+            <li>
+              {el[0]} --{">"} {el[1]} : {el[2]}
+            </li>
+          ))}
+        </ol>
       </div>
       <div>
         <button type="button" id="render" onClick={handleClick}>
